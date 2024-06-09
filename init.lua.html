@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>~/.config/nvim/init.lua.html</title>
+<meta name="Generator" content="Vim/8.1">
+<meta name="plugin-version" content="vim9.0_v1">
+<meta name="syntax" content="none">
+<meta name="settings" content="number_lines,use_css,no_foldcolumn,expand_tabs,line_ids,pre_wrap,prevent_copy=,use_input_for_pc=fallback">
+<meta name="colorscheme" content="industry">
+<style>
+<!--
+pre { white-space: pre-wrap; font-family: monospace; color: #dadada; background-color: #000000; }
+body { font-family: monospace; color: #dadada; background-color: #000000; }
+* { font-size: 1em; }
+.LineNr { color: #ffff00; }
+-->
+</style>
+
+<script>
+<!--
+
+/* function to open any folds containing a jumped-to line before jumping to it */
+function JumpToLine()
+{
+  var lineNum;
+  lineNum = window.location.hash;
+  lineNum = lineNum.substr(1); /* strip off '#' */
+
+  if (lineNum.indexOf('L') == -1) {
+    lineNum = 'L'+lineNum;
+  }
+  var lineElem = document.getElementById(lineNum);
+  /* Always jump to new location even if the line was hidden inside a fold, or
+   * we corrected the raw number to a line ID.
+   */
+  if (lineElem) {
+    lineElem.scrollIntoView(true);
+  }
+  return true;
+}
+if ('onhashchange' in window) {
+  window.onhashchange = JumpToLine;
+}
+
+-->
+</script>
+</head>
+<body onload='JumpToLine();'>
+<pre id='vimCodeElement'>
+<span id="L1" class="LineNr">  1 </span>--[[
+<span id="L2" class="LineNr">  2 </span>
+<span id="L3" class="LineNr">  3 </span>=====================================================================
+<span id="L4" class="LineNr">  4 </span>==================== READ THIS BEFORE CONTINUING ====================
+<span id="L5" class="LineNr">  5 </span>=====================================================================
+<span id="L6" class="LineNr">  6 </span>========                                    .-----.          ========
+<span id="L7" class="LineNr">  7 </span>========         .----------------------.   | === |          ========
+<span id="L8" class="LineNr">  8 </span>========         |.-&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;-.|   |-----|          ========
+<span id="L9" class="LineNr">  9 </span>========         ||                    ||   | === |          ========
+<span id="L10" class="LineNr"> 10 </span>========         ||   KICKSTART.NVIM   ||   |-----|          ========
+<span id="L11" class="LineNr"> 11 </span>========         ||                    ||   | === |          ========
+<span id="L12" class="LineNr"> 12 </span>========         ||                    ||   |-----|          ========
+<span id="L13" class="LineNr"> 13 </span>========         ||:Tutor              ||   |:::::|          ========
+<span id="L14" class="LineNr"> 14 </span>========         |'-..................-'|   |____o|          ========
+<span id="L15" class="LineNr"> 15 </span>========         `&quot;&quot;)----------------(&quot;&quot;`   ___________      ========
+<span id="L16" class="LineNr"> 16 </span>========        /::::::::::|  |::::::::::\  \ no mouse \     ========
+<span id="L17" class="LineNr"> 17 </span>========       /:::========|  |==hjkl==:::\  \ required \    ========
+<span id="L18" class="LineNr"> 18 </span>========      '&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;'  '&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;'  '&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;&quot;'   ========
+<span id="L19" class="LineNr"> 19 </span>========                                                     ========
+<span id="L20" class="LineNr"> 20 </span>=====================================================================
+<span id="L21" class="LineNr"> 21 </span>=====================================================================
+<span id="L22" class="LineNr"> 22 </span>
+<span id="L23" class="LineNr"> 23 </span>What is Kickstart?
+<span id="L24" class="LineNr"> 24 </span>
+<span id="L25" class="LineNr"> 25 </span>  Kickstart.nvim is *not* a distribution.
+<span id="L26" class="LineNr"> 26 </span>
+<span id="L27" class="LineNr"> 27 </span>  Kickstart.nvim is a starting point for your own configuration.
+<span id="L28" class="LineNr"> 28 </span>    The goal is that you can read every line of code, top-to-bottom, understand
+<span id="L29" class="LineNr"> 29 </span>    what your configuration is doing, and modify it to suit your needs.
+<span id="L30" class="LineNr"> 30 </span>
+<span id="L31" class="LineNr"> 31 </span>    Once you've done that, you can start exploring, configuring and tinkering to
+<span id="L32" class="LineNr"> 32 </span>    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
+<span id="L33" class="LineNr"> 33 </span>    or immediately breaking it into modular pieces. It's up to you!
+<span id="L34" class="LineNr"> 34 </span>
+<span id="L35" class="LineNr"> 35 </span>    If you don't know anything about Lua, I recommend taking some time to read through
+<span id="L36" class="LineNr"> 36 </span>    a guide. One possible example which will only take 10-15 minutes:
+<span id="L37" class="LineNr"> 37 </span>      - <a href="https://learnxinyminutes.com/docs/lua/">https://learnxinyminutes.com/docs/lua/</a>
+<span id="L38" class="LineNr"> 38 </span>
+<span id="L39" class="LineNr"> 39 </span>    After understanding a bit more about Lua, you can use `:help lua-guide` as a
+<span id="L40" class="LineNr"> 40 </span>    reference for how Neovim integrates Lua.
+<span id="L41" class="LineNr"> 41 </span>    - :help lua-guide
+<span id="L42" class="LineNr"> 42 </span>    - (or HTML version): <a href="https://neovim.io/doc/user/lua-guide.html">https://neovim.io/doc/user/lua-guide.html</a>
+<span id="L43" class="LineNr"> 43 </span>
+<span id="L44" class="LineNr"> 44 </span>Kickstart Guide:
+<span id="L45" class="LineNr"> 45 </span>
+<span id="L46" class="LineNr"> 46 </span>  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
+<span id="L47" class="LineNr"> 47 </span>
+<span id="L48" class="LineNr"> 48 </span>    If you don't know what this means, type the following:
+<span id="L49" class="LineNr"> 49 </span>      - &lt;escape key&gt;
+<span id="L50" class="LineNr"> 50 </span>      - :
+<span id="L51" class="LineNr"> 51 </span>      - Tutor
+<span id="L52" class="LineNr"> 52 </span>      - &lt;enter key&gt;
+<span id="L53" class="LineNr"> 53 </span>
+<span id="L54" class="LineNr"> 54 </span>    (If you already know the Neovim basics, you can skip this step.)
+<span id="L55" class="LineNr"> 55 </span>
+<span id="L56" class="LineNr"> 56 </span>  Once you've completed that, you can continue working through **AND READING** the rest
+<span id="L57" class="LineNr"> 57 </span>  of the kickstart init.lua.
+<span id="L58" class="LineNr"> 58 </span>
+<span id="L59" class="LineNr"> 59 </span>  Next, run AND READ `:help`.
+<span id="L60" class="LineNr"> 60 </span>    This will open up a help window with some basic information
+<span id="L61" class="LineNr"> 61 </span>    about reading, navigating and searching the builtin help documentation.
+<span id="L62" class="LineNr"> 62 </span>
+<span id="L63" class="LineNr"> 63 </span>    This should be the first place you go to look when you're stuck or confused
+<span id="L64" class="LineNr"> 64 </span>    with something. It's one of my favorite Neovim features.
+<span id="L65" class="LineNr"> 65 </span>
+<span id="L66" class="LineNr"> 66 </span>    MOST IMPORTANTLY, we provide a keymap &quot;&lt;space&gt;sh&quot; to [s]earch the [h]elp documentation,
+<span id="L67" class="LineNr"> 67 </span>    which is very useful when you're not exactly sure of what you're looking for.
+<span id="L68" class="LineNr"> 68 </span>
+<span id="L69" class="LineNr"> 69 </span>  I have left several `:help X` comments throughout the init.lua
+<span id="L70" class="LineNr"> 70 </span>    These are hints about where to find more information about the relevant settings,
+<span id="L71" class="LineNr"> 71 </span>    plugins or Neovim features used in Kickstart.
+<span id="L72" class="LineNr"> 72 </span>
+<span id="L73" class="LineNr"> 73 </span>   NOTE: Look for lines like this
+<span id="L74" class="LineNr"> 74 </span>
+<span id="L75" class="LineNr"> 75 </span>    Throughout the file. These are for you, the reader, to help you understand what is happening.
+<span id="L76" class="LineNr"> 76 </span>    Feel free to delete them once you know what you're doing, but they should serve as a guide
+<span id="L77" class="LineNr"> 77 </span>    for when you are first encountering a few different constructs in your Neovim config.
+<span id="L78" class="LineNr"> 78 </span>
+<span id="L79" class="LineNr"> 79 </span>If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
+<span id="L80" class="LineNr"> 80 </span>
+<span id="L81" class="LineNr"> 81 </span>I hope you enjoy your Neovim journey,
+<span id="L82" class="LineNr"> 82 </span>- TJ
+<span id="L83" class="LineNr"> 83 </span>
+<span id="L84" class="LineNr"> 84 </span>P.S. You can delete this when you're done too. It's your config now! :)
+<span id="L85" class="LineNr"> 85 </span>--]]
+<span id="L86" class="LineNr"> 86 </span>
+<span id="L87" class="LineNr"> 87 </span>-- Set &lt;space&gt; as the leader key
+<span id="L88" class="LineNr"> 88 </span>-- See `:help mapleader`
+<span id="L89" class="LineNr"> 89 </span>--  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
+<span id="L90" class="LineNr"> 90 </span>vim.g.mapleader = ' '
+<span id="L91" class="LineNr"> 91 </span>vim.g.maplocalleader = ' '
+<span id="L92" class="LineNr"> 92 </span>
+<span id="L93" class="LineNr"> 93 </span>-- Set to true if you have a Nerd Font installed
+<span id="L94" class="LineNr"> 94 </span>vim.g.have_nerd_font = false
+<span id="L95" class="LineNr"> 95 </span>
+<span id="L96" class="LineNr"> 96 </span>-- [[ Setting options ]]
+<span id="L97" class="LineNr"> 97 </span>-- See `:help vim.opt`
+<span id="L98" class="LineNr"> 98 </span>-- NOTE: You can change these options as you wish!
+<span id="L99" class="LineNr"> 99 </span>--  For more options, you can see `:help option-list`
+<span id="L100" class="LineNr">100 </span>
+<span id="L101" class="LineNr">101 </span>-- Make line numbers default
+<span id="L102" class="LineNr">102 </span>vim.opt.number = true
+<span id="L103" class="LineNr">103 </span>-- You can also add relative line numbers, to help with jumping.
+<span id="L104" class="LineNr">104 </span>--  Experiment for yourself to see if you like it!
+<span id="L105" class="LineNr">105 </span>vim.opt.relativenumber = true
+<span id="L106" class="LineNr">106 </span>
+<span id="L107" class="LineNr">107 </span>-- Enable mouse mode, can be useful for resizing splits for example!
+<span id="L108" class="LineNr">108 </span>vim.opt.mouse = 'a'
+<span id="L109" class="LineNr">109 </span>
+<span id="L110" class="LineNr">110 </span>-- Don't show the mode, since it's already in the status line
+<span id="L111" class="LineNr">111 </span>vim.opt.showmode = false
+<span id="L112" class="LineNr">112 </span>
+<span id="L113" class="LineNr">113 </span>-- Sync clipboard between OS and Neovim.
+<span id="L114" class="LineNr">114 </span>--  Remove this option if you want your OS clipboard to remain independent.
+<span id="L115" class="LineNr">115 </span>--  See `:help 'clipboard'`
+<span id="L116" class="LineNr">116 </span>vim.opt.clipboard = 'unnamedplus'
+<span id="L117" class="LineNr">117 </span>
+<span id="L118" class="LineNr">118 </span>-- Enable break indent
+<span id="L119" class="LineNr">119 </span>vim.opt.breakindent = true
+<span id="L120" class="LineNr">120 </span>
+<span id="L121" class="LineNr">121 </span>-- Save undo history
+<span id="L122" class="LineNr">122 </span>vim.opt.undofile = true
+<span id="L123" class="LineNr">123 </span>
+<span id="L124" class="LineNr">124 </span>-- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
+<span id="L125" class="LineNr">125 </span>vim.opt.ignorecase = true
+<span id="L126" class="LineNr">126 </span>vim.opt.smartcase = true
+<span id="L127" class="LineNr">127 </span>
+<span id="L128" class="LineNr">128 </span>-- Keep signcolumn on by default
+<span id="L129" class="LineNr">129 </span>vim.opt.signcolumn = 'yes'
+<span id="L130" class="LineNr">130 </span>
+<span id="L131" class="LineNr">131 </span>-- Decrease update time
+<span id="L132" class="LineNr">132 </span>vim.opt.updatetime = 250
+<span id="L133" class="LineNr">133 </span>
+<span id="L134" class="LineNr">134 </span>-- Decrease mapped sequence wait time
+<span id="L135" class="LineNr">135 </span>-- Displays which-key popup sooner
+<span id="L136" class="LineNr">136 </span>vim.opt.timeoutlen = 300
+<span id="L137" class="LineNr">137 </span>
+<span id="L138" class="LineNr">138 </span>-- Configure how new splits should be opened
+<span id="L139" class="LineNr">139 </span>vim.opt.splitright = true
+<span id="L140" class="LineNr">140 </span>vim.opt.splitbelow = true
+<span id="L141" class="LineNr">141 </span>
+<span id="L142" class="LineNr">142 </span>-- Sets how neovim will display certain whitespace characters in the editor.
+<span id="L143" class="LineNr">143 </span>--  See `:help 'list'`
+<span id="L144" class="LineNr">144 </span>--  and `:help 'listchars'`
+<span id="L145" class="LineNr">145 </span>vim.opt.list = true
+<span id="L146" class="LineNr">146 </span>vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+<span id="L147" class="LineNr">147 </span>
+<span id="L148" class="LineNr">148 </span>-- Preview substitutions live, as you type!
+<span id="L149" class="LineNr">149 </span>vim.opt.inccommand = 'split'
+<span id="L150" class="LineNr">150 </span>
+<span id="L151" class="LineNr">151 </span>-- Show which line your cursor is on
+<span id="L152" class="LineNr">152 </span>vim.opt.cursorline = true
+<span id="L153" class="LineNr">153 </span>
+<span id="L154" class="LineNr">154 </span>-- Minimal number of screen lines to keep above and below the cursor.
+<span id="L155" class="LineNr">155 </span>vim.opt.scrolloff = 10
+<span id="L156" class="LineNr">156 </span>
+<span id="L157" class="LineNr">157 </span>-- [[ Basic Keymaps ]]
+<span id="L158" class="LineNr">158 </span>--  See `:help vim.keymap.set()`
+<span id="L159" class="LineNr">159 </span>
+<span id="L160" class="LineNr">160 </span>-- Set highlight on search, but clear on pressing &lt;Esc&gt; in normal mode
+<span id="L161" class="LineNr">161 </span>vim.opt.hlsearch = true
+<span id="L162" class="LineNr">162 </span>vim.keymap.set('n', '&lt;Esc&gt;', '&lt;cmd&gt;nohlsearch&lt;CR&gt;')
+<span id="L163" class="LineNr">163 </span>
+<span id="L164" class="LineNr">164 </span>-- Diagnostic keymaps
+<span id="L165" class="LineNr">165 </span>vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+<span id="L166" class="LineNr">166 </span>vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+<span id="L167" class="LineNr">167 </span>vim.keymap.set('n', '&lt;leader&gt;e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
+<span id="L168" class="LineNr">168 </span>vim.keymap.set('n', '&lt;leader&gt;q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+<span id="L169" class="LineNr">169 </span>
+<span id="L170" class="LineNr">170 </span>-- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
+<span id="L171" class="LineNr">171 </span>-- for people to discover. Otherwise, you normally need to press &lt;C-\&gt;&lt;C-n&gt;, which
+<span id="L172" class="LineNr">172 </span>-- is not what someone will guess without a bit more experience.
+<span id="L173" class="LineNr">173 </span>--
+<span id="L174" class="LineNr">174 </span>-- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
+<span id="L175" class="LineNr">175 </span>-- or just use &lt;C-\&gt;&lt;C-n&gt; to exit terminal mode
+<span id="L176" class="LineNr">176 </span>vim.keymap.set('t', '&lt;Esc&gt;&lt;Esc&gt;', '&lt;C-\\&gt;&lt;C-n&gt;', { desc = 'Exit terminal mode' })
+<span id="L177" class="LineNr">177 </span>
+<span id="L178" class="LineNr">178 </span>-- TIP: Disable arrow keys in normal mode
+<span id="L179" class="LineNr">179 </span>-- vim.keymap.set('n', '&lt;left&gt;', '&lt;cmd&gt;echo &quot;Use h to move!!&quot;&lt;CR&gt;')
+<span id="L180" class="LineNr">180 </span>-- vim.keymap.set('n', '&lt;right&gt;', '&lt;cmd&gt;echo &quot;Use l to move!!&quot;&lt;CR&gt;')
+<span id="L181" class="LineNr">181 </span>-- vim.keymap.set('n', '&lt;up&gt;', '&lt;cmd&gt;echo &quot;Use k to move!!&quot;&lt;CR&gt;')
+<span id="L182" class="LineNr">182 </span>-- vim.keymap.set('n', '&lt;down&gt;', '&lt;cmd&gt;echo &quot;Use j to move!!&quot;&lt;CR&gt;')
+<span id="L183" class="LineNr">183 </span>
+<span id="L184" class="LineNr">184 </span>-- Keybinds to make split navigation easier.
+<span id="L185" class="LineNr">185 </span>--  Use CTRL+&lt;hjkl&gt; to switch between windows
+<span id="L186" class="LineNr">186 </span>--
+<span id="L187" class="LineNr">187 </span>--  See `:help wincmd` for a list of all window commands
+<span id="L188" class="LineNr">188 </span>vim.keymap.set('n', '&lt;C-h&gt;', '&lt;C-w&gt;&lt;C-h&gt;', { desc = 'Move focus to the left window' })
+<span id="L189" class="LineNr">189 </span>vim.keymap.set('n', '&lt;C-l&gt;', '&lt;C-w&gt;&lt;C-l&gt;', { desc = 'Move focus to the right window' })
+<span id="L190" class="LineNr">190 </span>vim.keymap.set('n', '&lt;C-j&gt;', '&lt;C-w&gt;&lt;C-j&gt;', { desc = 'Move focus to the lower window' })
+<span id="L191" class="LineNr">191 </span>vim.keymap.set('n', '&lt;C-k&gt;', '&lt;C-w&gt;&lt;C-k&gt;', { desc = 'Move focus to the upper window' })
+<span id="L192" class="LineNr">192 </span>
+<span id="L193" class="LineNr">193 </span>-- [[ Basic Autocommands ]]
+<span id="L194" class="LineNr">194 </span>--  See `:help lua-guide-autocommands`
+<span id="L195" class="LineNr">195 </span>
+<span id="L196" class="LineNr">196 </span>-- Highlight when yanking (copying) text
+<span id="L197" class="LineNr">197 </span>--  Try it with `yap` in normal mode
+<span id="L198" class="LineNr">198 </span>--  See `:help vim.highlight.on_yank()`
+<span id="L199" class="LineNr">199 </span>vim.api.nvim_create_autocmd('TextYankPost', {
+<span id="L200" class="LineNr">200 </span>  desc = 'Highlight when yanking (copying) text',
+<span id="L201" class="LineNr">201 </span>  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+<span id="L202" class="LineNr">202 </span>  callback = function()
+<span id="L203" class="LineNr">203 </span>    vim.highlight.on_yank()
+<span id="L204" class="LineNr">204 </span>  end,
+<span id="L205" class="LineNr">205 </span>})
+<span id="L206" class="LineNr">206 </span>
+<span id="L207" class="LineNr">207 </span>-- [[ Install `lazy.nvim` plugin manager ]]
+<span id="L208" class="LineNr">208 </span>--    See `:help lazy.nvim.txt` or <a href="https://github.com/folke/lazy.nvim">https://github.com/folke/lazy.nvim</a> for more info
+<span id="L209" class="LineNr">209 </span>local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+<span id="L210" class="LineNr">210 </span>if not vim.loop.fs_stat(lazypath) then
+<span id="L211" class="LineNr">211 </span>  local lazyrepo = '<a href="https://github.com/folke/lazy.nvim.git">https://github.com/folke/lazy.nvim.git</a>'
+<span id="L212" class="LineNr">212 </span>  vim.fn.system { 'git', 'clone', '--filter=blob:none', '--branch=stable', lazyrepo, lazypath }
+<span id="L213" class="LineNr">213 </span>end ---@diagnostic disable-next-line: undefined-field
+<span id="L214" class="LineNr">214 </span>vim.opt.rtp:prepend(lazypath)
+<span id="L215" class="LineNr">215 </span>
+<span id="L216" class="LineNr">216 </span>-- [[ Configure and install plugins ]]
+<span id="L217" class="LineNr">217 </span>--
+<span id="L218" class="LineNr">218 </span>--  To check the current status of your plugins, run
+<span id="L219" class="LineNr">219 </span>--    :Lazy
+<span id="L220" class="LineNr">220 </span>--
+<span id="L221" class="LineNr">221 </span>--  You can press `?` in this menu for help. Use `:q` to close the window
+<span id="L222" class="LineNr">222 </span>--
+<span id="L223" class="LineNr">223 </span>--  To update plugins you can run
+<span id="L224" class="LineNr">224 </span>--    :Lazy update
+<span id="L225" class="LineNr">225 </span>--
+<span id="L226" class="LineNr">226 </span>-- NOTE: Here is where you install your plugins.
+<span id="L227" class="LineNr">227 </span>require('lazy').setup({
+<span id="L228" class="LineNr">228 </span>  -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+<span id="L229" class="LineNr">229 </span>  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+<span id="L230" class="LineNr">230 </span>
+<span id="L231" class="LineNr">231 </span>  -- NOTE: Plugins can also be added by using a table,
+<span id="L232" class="LineNr">232 </span>  -- with the first argument being the link and the following
+<span id="L233" class="LineNr">233 </span>  -- keys can be used to configure plugin behavior/loading/etc.
+<span id="L234" class="LineNr">234 </span>  --
+<span id="L235" class="LineNr">235 </span>  -- Use `opts = {}` to force a plugin to be loaded.
+<span id="L236" class="LineNr">236 </span>  --
+<span id="L237" class="LineNr">237 </span>  --  This is equivalent to:
+<span id="L238" class="LineNr">238 </span>  --    require('Comment').setup({})
+<span id="L239" class="LineNr">239 </span>
+<span id="L240" class="LineNr">240 </span>  -- &quot;gc&quot; to comment visual regions/lines
+<span id="L241" class="LineNr">241 </span>  { 'numToStr/Comment.nvim', opts = {} },
+<span id="L242" class="LineNr">242 </span>
+<span id="L243" class="LineNr">243 </span>  -- Here is a more advanced example where we pass configuration
+<span id="L244" class="LineNr">244 </span>  -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
+<span id="L245" class="LineNr">245 </span>  --    require('gitsigns').setup({ ... })
+<span id="L246" class="LineNr">246 </span>  --
+<span id="L247" class="LineNr">247 </span>  -- See `:help gitsigns` to understand what the configuration keys do
+<span id="L248" class="LineNr">248 </span>  { -- Adds git related signs to the gutter, as well as utilities for managing changes
+<span id="L249" class="LineNr">249 </span>    'lewis6991/gitsigns.nvim',
+<span id="L250" class="LineNr">250 </span>    opts = {
+<span id="L251" class="LineNr">251 </span>      signs = {
+<span id="L252" class="LineNr">252 </span>        add = { text = '+' },
+<span id="L253" class="LineNr">253 </span>        change = { text = '~' },
+<span id="L254" class="LineNr">254 </span>        delete = { text = '_' },
+<span id="L255" class="LineNr">255 </span>        topdelete = { text = '‾' },
+<span id="L256" class="LineNr">256 </span>        changedelete = { text = '~' },
+<span id="L257" class="LineNr">257 </span>      },
+<span id="L258" class="LineNr">258 </span>    },
+<span id="L259" class="LineNr">259 </span>  },
+<span id="L260" class="LineNr">260 </span>
+<span id="L261" class="LineNr">261 </span>  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
+<span id="L262" class="LineNr">262 </span>  --
+<span id="L263" class="LineNr">263 </span>  -- This is often very useful to both group configuration, as well as handle
+<span id="L264" class="LineNr">264 </span>  -- lazy loading plugins that don't need to be loaded immediately at startup.
+<span id="L265" class="LineNr">265 </span>  --
+<span id="L266" class="LineNr">266 </span>  -- For example, in the following configuration, we use:
+<span id="L267" class="LineNr">267 </span>  --  event = 'VimEnter'
+<span id="L268" class="LineNr">268 </span>  --
+<span id="L269" class="LineNr">269 </span>  -- which loads which-key before all the UI elements are loaded. Events can be
+<span id="L270" class="LineNr">270 </span>  -- normal autocommands events (`:help autocmd-events`).
+<span id="L271" class="LineNr">271 </span>  --
+<span id="L272" class="LineNr">272 </span>  -- Then, because we use the `config` key, the configuration only runs
+<span id="L273" class="LineNr">273 </span>  -- after the plugin has been loaded:
+<span id="L274" class="LineNr">274 </span>  --  config = function() ... end
+<span id="L275" class="LineNr">275 </span>
+<span id="L276" class="LineNr">276 </span>  { -- Useful plugin to show you pending keybinds.
+<span id="L277" class="LineNr">277 </span>    'folke/which-key.nvim',
+<span id="L278" class="LineNr">278 </span>    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+<span id="L279" class="LineNr">279 </span>    config = function() -- This is the function that runs, AFTER loading
+<span id="L280" class="LineNr">280 </span>      require('which-key').setup()
+<span id="L281" class="LineNr">281 </span>
+<span id="L282" class="LineNr">282 </span>      -- Document existing key chains
+<span id="L283" class="LineNr">283 </span>      require('which-key').register {
+<span id="L284" class="LineNr">284 </span>        ['&lt;leader&gt;c'] = { name = '[C]ode', _ = 'which_key_ignore' },
+<span id="L285" class="LineNr">285 </span>        ['&lt;leader&gt;d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
+<span id="L286" class="LineNr">286 </span>        ['&lt;leader&gt;r'] = { name = '[R]ename', _ = 'which_key_ignore' },
+<span id="L287" class="LineNr">287 </span>        ['&lt;leader&gt;s'] = { name = '[S]earch', _ = 'which_key_ignore' },
+<span id="L288" class="LineNr">288 </span>        ['&lt;leader&gt;w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+<span id="L289" class="LineNr">289 </span>      }
+<span id="L290" class="LineNr">290 </span>    end,
+<span id="L291" class="LineNr">291 </span>  },
+<span id="L292" class="LineNr">292 </span>
+<span id="L293" class="LineNr">293 </span>  -- NOTE: Plugins can specify dependencies.
+<span id="L294" class="LineNr">294 </span>  --
+<span id="L295" class="LineNr">295 </span>  -- The dependencies are proper plugin specifications as well - anything
+<span id="L296" class="LineNr">296 </span>  -- you do for a plugin at the top level, you can do for a dependency.
+<span id="L297" class="LineNr">297 </span>  --
+<span id="L298" class="LineNr">298 </span>  -- Use the `dependencies` key to specify the dependencies of a particular plugin
+<span id="L299" class="LineNr">299 </span>
+<span id="L300" class="LineNr">300 </span>  { -- Fuzzy Finder (files, lsp, etc)
+<span id="L301" class="LineNr">301 </span>    'nvim-telescope/telescope.nvim',
+<span id="L302" class="LineNr">302 </span>    event = 'VimEnter',
+<span id="L303" class="LineNr">303 </span>    branch = '0.1.x',
+<span id="L304" class="LineNr">304 </span>    dependencies = {
+<span id="L305" class="LineNr">305 </span>      'nvim-lua/plenary.nvim',
+<span id="L306" class="LineNr">306 </span>      { -- If encountering errors, see telescope-fzf-native README for installation instructions
+<span id="L307" class="LineNr">307 </span>        'nvim-telescope/telescope-fzf-native.nvim',
+<span id="L308" class="LineNr">308 </span>
+<span id="L309" class="LineNr">309 </span>        -- `build` is used to run some command when the plugin is installed/updated.
+<span id="L310" class="LineNr">310 </span>        -- This is only run then, not every time Neovim starts up.
+<span id="L311" class="LineNr">311 </span>        build = 'make',
+<span id="L312" class="LineNr">312 </span>
+<span id="L313" class="LineNr">313 </span>        -- `cond` is a condition used to determine whether this plugin should be
+<span id="L314" class="LineNr">314 </span>        -- installed and loaded.
+<span id="L315" class="LineNr">315 </span>        cond = function()
+<span id="L316" class="LineNr">316 </span>          return vim.fn.executable 'make' == 1
+<span id="L317" class="LineNr">317 </span>        end,
+<span id="L318" class="LineNr">318 </span>      },
+<span id="L319" class="LineNr">319 </span>      { 'nvim-telescope/telescope-ui-select.nvim' },
+<span id="L320" class="LineNr">320 </span>
+<span id="L321" class="LineNr">321 </span>      -- Useful for getting pretty icons, but requires a Nerd Font.
+<span id="L322" class="LineNr">322 </span>      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+<span id="L323" class="LineNr">323 </span>    },
+<span id="L324" class="LineNr">324 </span>    config = function()
+<span id="L325" class="LineNr">325 </span>      -- Telescope is a fuzzy finder that comes with a lot of different things that
+<span id="L326" class="LineNr">326 </span>      -- it can fuzzy find! It's more than just a &quot;file finder&quot;, it can search
+<span id="L327" class="LineNr">327 </span>      -- many different aspects of Neovim, your workspace, LSP, and more!
+<span id="L328" class="LineNr">328 </span>      --
+<span id="L329" class="LineNr">329 </span>      -- The easiest way to use Telescope, is to start by doing something like:
+<span id="L330" class="LineNr">330 </span>      --  :Telescope help_tags
+<span id="L331" class="LineNr">331 </span>      --
+<span id="L332" class="LineNr">332 </span>      -- After running this command, a window will open up and you're able to
+<span id="L333" class="LineNr">333 </span>      -- type in the prompt window. You'll see a list of `help_tags` options and
+<span id="L334" class="LineNr">334 </span>      -- a corresponding preview of the help.
+<span id="L335" class="LineNr">335 </span>      --
+<span id="L336" class="LineNr">336 </span>      -- Two important keymaps to use while in Telescope are:
+<span id="L337" class="LineNr">337 </span>      --  - Insert mode: &lt;c-/&gt;
+<span id="L338" class="LineNr">338 </span>      --  - Normal mode: ?
+<span id="L339" class="LineNr">339 </span>      --
+<span id="L340" class="LineNr">340 </span>      -- This opens a window that shows you all of the keymaps for the current
+<span id="L341" class="LineNr">341 </span>      -- Telescope picker. This is really useful to discover what Telescope can
+<span id="L342" class="LineNr">342 </span>      -- do as well as how to actually do it!
+<span id="L343" class="LineNr">343 </span>
+<span id="L344" class="LineNr">344 </span>      -- [[ Configure Telescope ]]
+<span id="L345" class="LineNr">345 </span>      -- See `:help telescope` and `:help telescope.setup()`
+<span id="L346" class="LineNr">346 </span>      require('telescope').setup {
+<span id="L347" class="LineNr">347 </span>        -- You can put your default mappings / updates / etc. in here
+<span id="L348" class="LineNr">348 </span>        --  All the info you're looking for is in `:help telescope.setup()`
+<span id="L349" class="LineNr">349 </span>        --
+<span id="L350" class="LineNr">350 </span>        -- defaults = {
+<span id="L351" class="LineNr">351 </span>        --   mappings = {
+<span id="L352" class="LineNr">352 </span>        --     i = { ['&lt;c-enter&gt;'] = 'to_fuzzy_refine' },
+<span id="L353" class="LineNr">353 </span>        --   },
+<span id="L354" class="LineNr">354 </span>        -- },
+<span id="L355" class="LineNr">355 </span>        -- pickers = {}
+<span id="L356" class="LineNr">356 </span>        extensions = {
+<span id="L357" class="LineNr">357 </span>          ['ui-select'] = {
+<span id="L358" class="LineNr">358 </span>            require('telescope.themes').get_dropdown(),
+<span id="L359" class="LineNr">359 </span>          },
+<span id="L360" class="LineNr">360 </span>        },
+<span id="L361" class="LineNr">361 </span>      }
+<span id="L362" class="LineNr">362 </span>
+<span id="L363" class="LineNr">363 </span>      -- Enable Telescope extensions if they are installed
+<span id="L364" class="LineNr">364 </span>      pcall(require('telescope').load_extension, 'fzf')
+<span id="L365" class="LineNr">365 </span>      pcall(require('telescope').load_extension, 'ui-select')
+<span id="L366" class="LineNr">366 </span>
+<span id="L367" class="LineNr">367 </span>      -- See `:help telescope.builtin`
+<span id="L368" class="LineNr">368 </span>      local builtin = require 'telescope.builtin'
+<span id="L369" class="LineNr">369 </span>      vim.keymap.set('n', '&lt;leader&gt;sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
+<span id="L370" class="LineNr">370 </span>      vim.keymap.set('n', '&lt;leader&gt;sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
+<span id="L371" class="LineNr">371 </span>      vim.keymap.set('n', '&lt;leader&gt;sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+<span id="L372" class="LineNr">372 </span>      vim.keymap.set('n', '&lt;leader&gt;ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
+<span id="L373" class="LineNr">373 </span>      vim.keymap.set('n', '&lt;leader&gt;sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+<span id="L374" class="LineNr">374 </span>      vim.keymap.set('n', '&lt;leader&gt;sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+<span id="L375" class="LineNr">375 </span>      vim.keymap.set('n', '&lt;leader&gt;sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
+<span id="L376" class="LineNr">376 </span>      vim.keymap.set('n', '&lt;leader&gt;sr', builtin.resume, { desc = '[S]earch [R]esume' })
+<span id="L377" class="LineNr">377 </span>      vim.keymap.set('n', '&lt;leader&gt;s.', builtin.oldfiles, { desc = '[S]earch Recent Files (&quot;.&quot; for repeat)' })
+<span id="L378" class="LineNr">378 </span>      vim.keymap.set('n', '&lt;leader&gt;&lt;leader&gt;', builtin.buffers, { desc = '[ ] Find existing buffers' })
+<span id="L379" class="LineNr">379 </span>
+<span id="L380" class="LineNr">380 </span>      -- Slightly advanced example of overriding default behavior and theme
+<span id="L381" class="LineNr">381 </span>      vim.keymap.set('n', '&lt;leader&gt;/', function()
+<span id="L382" class="LineNr">382 </span>        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+<span id="L383" class="LineNr">383 </span>        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+<span id="L384" class="LineNr">384 </span>          winblend = 10,
+<span id="L385" class="LineNr">385 </span>          previewer = false,
+<span id="L386" class="LineNr">386 </span>        })
+<span id="L387" class="LineNr">387 </span>      end, { desc = '[/] Fuzzily search in current buffer' })
+<span id="L388" class="LineNr">388 </span>
+<span id="L389" class="LineNr">389 </span>      -- It's also possible to pass additional configuration options.
+<span id="L390" class="LineNr">390 </span>      --  See `:help telescope.builtin.live_grep()` for information about particular keys
+<span id="L391" class="LineNr">391 </span>      vim.keymap.set('n', '&lt;leader&gt;s/', function()
+<span id="L392" class="LineNr">392 </span>        builtin.live_grep {
+<span id="L393" class="LineNr">393 </span>          grep_open_files = true,
+<span id="L394" class="LineNr">394 </span>          prompt_title = 'Live Grep in Open Files',
+<span id="L395" class="LineNr">395 </span>        }
+<span id="L396" class="LineNr">396 </span>      end, { desc = '[S]earch [/] in Open Files' })
+<span id="L397" class="LineNr">397 </span>
+<span id="L398" class="LineNr">398 </span>      -- Shortcut for searching your Neovim configuration files
+<span id="L399" class="LineNr">399 </span>      vim.keymap.set('n', '&lt;leader&gt;sn', function()
+<span id="L400" class="LineNr">400 </span>        builtin.find_files { cwd = vim.fn.stdpath 'config' }
+<span id="L401" class="LineNr">401 </span>      end, { desc = '[S]earch [N]eovim files' })
+<span id="L402" class="LineNr">402 </span>    end,
+<span id="L403" class="LineNr">403 </span>  },
+<span id="L404" class="LineNr">404 </span>
+<span id="L405" class="LineNr">405 </span>  { -- LSP Configuration &amp; Plugins
+<span id="L406" class="LineNr">406 </span>    'neovim/nvim-lspconfig',
+<span id="L407" class="LineNr">407 </span>    dependencies = {
+<span id="L408" class="LineNr">408 </span>      -- Automatically install LSPs and related tools to stdpath for Neovim
+<span id="L409" class="LineNr">409 </span>      'williamboman/mason.nvim',
+<span id="L410" class="LineNr">410 </span>      'williamboman/mason-lspconfig.nvim',
+<span id="L411" class="LineNr">411 </span>      'WhoIsSethDaniel/mason-tool-installer.nvim',
+<span id="L412" class="LineNr">412 </span>
+<span id="L413" class="LineNr">413 </span>      -- Useful status updates for LSP.
+<span id="L414" class="LineNr">414 </span>      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
+<span id="L415" class="LineNr">415 </span>      { 'j-hui/fidget.nvim', opts = {} },
+<span id="L416" class="LineNr">416 </span>
+<span id="L417" class="LineNr">417 </span>      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
+<span id="L418" class="LineNr">418 </span>      -- used for completion, annotations and signatures of Neovim apis
+<span id="L419" class="LineNr">419 </span>      { 'folke/neodev.nvim', opts = {} },
+<span id="L420" class="LineNr">420 </span>    },
+<span id="L421" class="LineNr">421 </span>    config = function()
+<span id="L422" class="LineNr">422 </span>      -- Brief aside: **What is LSP?**
+<span id="L423" class="LineNr">423 </span>      --
+<span id="L424" class="LineNr">424 </span>      -- LSP is an initialism you've probably heard, but might not understand what it is.
+<span id="L425" class="LineNr">425 </span>      --
+<span id="L426" class="LineNr">426 </span>      -- LSP stands for Language Server Protocol. It's a protocol that helps editors
+<span id="L427" class="LineNr">427 </span>      -- and language tooling communicate in a standardized fashion.
+<span id="L428" class="LineNr">428 </span>      --
+<span id="L429" class="LineNr">429 </span>      -- In general, you have a &quot;server&quot; which is some tool built to understand a particular
+<span id="L430" class="LineNr">430 </span>      -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
+<span id="L431" class="LineNr">431 </span>      -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
+<span id="L432" class="LineNr">432 </span>      -- processes that communicate with some &quot;client&quot; - in this case, Neovim!
+<span id="L433" class="LineNr">433 </span>      --
+<span id="L434" class="LineNr">434 </span>      -- LSP provides Neovim with features like:
+<span id="L435" class="LineNr">435 </span>      --  - Go to definition
+<span id="L436" class="LineNr">436 </span>      --  - Find references
+<span id="L437" class="LineNr">437 </span>      --  - Autocompletion
+<span id="L438" class="LineNr">438 </span>      --  - Symbol Search
+<span id="L439" class="LineNr">439 </span>      --  - and more!
+<span id="L440" class="LineNr">440 </span>      --
+<span id="L441" class="LineNr">441 </span>      -- Thus, Language Servers are external tools that must be installed separately from
+<span id="L442" class="LineNr">442 </span>      -- Neovim. This is where `mason` and related plugins come into play.
+<span id="L443" class="LineNr">443 </span>      --
+<span id="L444" class="LineNr">444 </span>      -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
+<span id="L445" class="LineNr">445 </span>      -- and elegantly composed help section, `:help lsp-vs-treesitter`
+<span id="L446" class="LineNr">446 </span>
+<span id="L447" class="LineNr">447 </span>      --  This function gets run when an LSP attaches to a particular buffer.
+<span id="L448" class="LineNr">448 </span>      --    That is to say, every time a new file is opened that is associated with
+<span id="L449" class="LineNr">449 </span>      --    an lsp (for example, opening `main.rs` is associated with `rust_analyzer`) this
+<span id="L450" class="LineNr">450 </span>      --    function will be executed to configure the current buffer
+<span id="L451" class="LineNr">451 </span>      vim.api.nvim_create_autocmd('LspAttach', {
+<span id="L452" class="LineNr">452 </span>        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
+<span id="L453" class="LineNr">453 </span>        callback = function(event)
+<span id="L454" class="LineNr">454 </span>          -- NOTE: Remember that Lua is a real programming language, and as such it is possible
+<span id="L455" class="LineNr">455 </span>          -- to define small helper and utility functions so you don't have to repeat yourself.
+<span id="L456" class="LineNr">456 </span>          --
+<span id="L457" class="LineNr">457 </span>          -- In this case, we create a function that lets us more easily define mappings specific
+<span id="L458" class="LineNr">458 </span>          -- for LSP related items. It sets the mode, buffer and description for us each time.
+<span id="L459" class="LineNr">459 </span>          local map = function(keys, func, desc)
+<span id="L460" class="LineNr">460 </span>            vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
+<span id="L461" class="LineNr">461 </span>          end
+<span id="L462" class="LineNr">462 </span>
+<span id="L463" class="LineNr">463 </span>          -- Jump to the definition of the word under your cursor.
+<span id="L464" class="LineNr">464 </span>          --  This is where a variable was first declared, or where a function is defined, etc.
+<span id="L465" class="LineNr">465 </span>          --  To jump back, press &lt;C-t&gt;.
+<span id="L466" class="LineNr">466 </span>          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+<span id="L467" class="LineNr">467 </span>
+<span id="L468" class="LineNr">468 </span>          -- Find references for the word under your cursor.
+<span id="L469" class="LineNr">469 </span>          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+<span id="L470" class="LineNr">470 </span>
+<span id="L471" class="LineNr">471 </span>          -- Jump to the implementation of the word under your cursor.
+<span id="L472" class="LineNr">472 </span>          --  Useful when your language has ways of declaring types without an actual implementation.
+<span id="L473" class="LineNr">473 </span>          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
+<span id="L474" class="LineNr">474 </span>
+<span id="L475" class="LineNr">475 </span>          -- Jump to the type of the word under your cursor.
+<span id="L476" class="LineNr">476 </span>          --  Useful when you're not sure what type a variable is and you want to see
+<span id="L477" class="LineNr">477 </span>          --  the definition of its *type*, not where it was *defined*.
+<span id="L478" class="LineNr">478 </span>          map('&lt;leader&gt;D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
+<span id="L479" class="LineNr">479 </span>
+<span id="L480" class="LineNr">480 </span>          -- Fuzzy find all the symbols in your current document.
+<span id="L481" class="LineNr">481 </span>          --  Symbols are things like variables, functions, types, etc.
+<span id="L482" class="LineNr">482 </span>          map('&lt;leader&gt;ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
+<span id="L483" class="LineNr">483 </span>
+<span id="L484" class="LineNr">484 </span>          -- Fuzzy find all the symbols in your current workspace.
+<span id="L485" class="LineNr">485 </span>          --  Similar to document symbols, except searches over your entire project.
+<span id="L486" class="LineNr">486 </span>          map('&lt;leader&gt;ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
+<span id="L487" class="LineNr">487 </span>
+<span id="L488" class="LineNr">488 </span>          -- Rename the variable under your cursor.
+<span id="L489" class="LineNr">489 </span>          --  Most Language Servers support renaming across files, etc.
+<span id="L490" class="LineNr">490 </span>          map('&lt;leader&gt;rn', vim.lsp.buf.rename, '[R]e[n]ame')
+<span id="L491" class="LineNr">491 </span>
+<span id="L492" class="LineNr">492 </span>          -- Execute a code action, usually your cursor needs to be on top of an error
+<span id="L493" class="LineNr">493 </span>          -- or a suggestion from your LSP for this to activate.
+<span id="L494" class="LineNr">494 </span>          map('&lt;leader&gt;ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
+<span id="L495" class="LineNr">495 </span>
+<span id="L496" class="LineNr">496 </span>          -- Opens a popup that displays documentation about the word under your cursor
+<span id="L497" class="LineNr">497 </span>          --  See `:help K` for why this keymap.
+<span id="L498" class="LineNr">498 </span>          map('K', vim.lsp.buf.hover, 'Hover Documentation')
+<span id="L499" class="LineNr">499 </span>
+<span id="L500" class="LineNr">500 </span>          -- WARN: This is not Goto Definition, this is Goto Declaration.
+<span id="L501" class="LineNr">501 </span>          --  For example, in C this would take you to the header.
+<span id="L502" class="LineNr">502 </span>          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+<span id="L503" class="LineNr">503 </span>
+<span id="L504" class="LineNr">504 </span>          -- The following two autocommands are used to highlight references of the
+<span id="L505" class="LineNr">505 </span>          -- word under your cursor when your cursor rests there for a little while.
+<span id="L506" class="LineNr">506 </span>          --    See `:help CursorHold` for information about when this is executed
+<span id="L507" class="LineNr">507 </span>          --
+<span id="L508" class="LineNr">508 </span>          -- When you move your cursor, the highlights will be cleared (the second autocommand).
+<span id="L509" class="LineNr">509 </span>          local client = vim.lsp.get_client_by_id(event.data.client_id)
+<span id="L510" class="LineNr">510 </span>          if client and client.server_capabilities.documentHighlightProvider then
+<span id="L511" class="LineNr">511 </span>            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
+<span id="L512" class="LineNr">512 </span>              buffer = event.buf,
+<span id="L513" class="LineNr">513 </span>              callback = vim.lsp.buf.document_highlight,
+<span id="L514" class="LineNr">514 </span>            })
+<span id="L515" class="LineNr">515 </span>
+<span id="L516" class="LineNr">516 </span>            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
+<span id="L517" class="LineNr">517 </span>              buffer = event.buf,
+<span id="L518" class="LineNr">518 </span>              callback = vim.lsp.buf.clear_references,
+<span id="L519" class="LineNr">519 </span>            })
+<span id="L520" class="LineNr">520 </span>          end
+<span id="L521" class="LineNr">521 </span>        end,
+<span id="L522" class="LineNr">522 </span>      })
+<span id="L523" class="LineNr">523 </span>
+<span id="L524" class="LineNr">524 </span>      -- LSP servers and clients are able to communicate to each other what features they support.
+<span id="L525" class="LineNr">525 </span>      --  By default, Neovim doesn't support everything that is in the LSP specification.
+<span id="L526" class="LineNr">526 </span>      --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
+<span id="L527" class="LineNr">527 </span>      --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
+<span id="L528" class="LineNr">528 </span>      local capabilities = vim.lsp.protocol.make_client_capabilities()
+<span id="L529" class="LineNr">529 </span>      capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
+<span id="L530" class="LineNr">530 </span>
+<span id="L531" class="LineNr">531 </span>      -- Enable the following language servers
+<span id="L532" class="LineNr">532 </span>      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
+<span id="L533" class="LineNr">533 </span>      --
+<span id="L534" class="LineNr">534 </span>      --  Add any additional override configuration in the following tables. Available keys are:
+<span id="L535" class="LineNr">535 </span>      --  - cmd (table): Override the default command used to start the server
+<span id="L536" class="LineNr">536 </span>      --  - filetypes (table): Override the default list of associated filetypes for the server
+<span id="L537" class="LineNr">537 </span>      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
+<span id="L538" class="LineNr">538 </span>      --  - settings (table): Override the default settings passed when initializing the server.
+<span id="L539" class="LineNr">539 </span>      --        For example, to see the options for `lua_ls`, you could go to: <a href="https://luals.github.io/wiki/settings/">https://luals.github.io/wiki/settings/</a>
+<span id="L540" class="LineNr">540 </span>      local servers = {
+<span id="L541" class="LineNr">541 </span>        -- clangd = {},
+<span id="L542" class="LineNr">542 </span>        -- gopls = {},
+<span id="L543" class="LineNr">543 </span>        -- pyright = {},
+<span id="L544" class="LineNr">544 </span>        -- rust_analyzer = {},
+<span id="L545" class="LineNr">545 </span>        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
+<span id="L546" class="LineNr">546 </span>        --
+<span id="L547" class="LineNr">547 </span>        -- Some languages (like typescript) have entire language plugins that can be useful:
+<span id="L548" class="LineNr">548 </span>        --    <a href="https://github.com/pmizio/typescript-tools.nvim">https://github.com/pmizio/typescript-tools.nvim</a>
+<span id="L549" class="LineNr">549 </span>        --
+<span id="L550" class="LineNr">550 </span>        -- But for many setups, the LSP (`tsserver`) will work just fine
+<span id="L551" class="LineNr">551 </span>        -- tsserver = {},
+<span id="L552" class="LineNr">552 </span>        --
+<span id="L553" class="LineNr">553 </span>
+<span id="L554" class="LineNr">554 </span>        lua_ls = {
+<span id="L555" class="LineNr">555 </span>          -- cmd = {...},
+<span id="L556" class="LineNr">556 </span>          -- filetypes = { ...},
+<span id="L557" class="LineNr">557 </span>          -- capabilities = {},
+<span id="L558" class="LineNr">558 </span>          settings = {
+<span id="L559" class="LineNr">559 </span>            Lua = {
+<span id="L560" class="LineNr">560 </span>              completion = {
+<span id="L561" class="LineNr">561 </span>                callSnippet = 'Replace',
+<span id="L562" class="LineNr">562 </span>              },
+<span id="L563" class="LineNr">563 </span>              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
+<span id="L564" class="LineNr">564 </span>              -- diagnostics = { disable = { 'missing-fields' } },
+<span id="L565" class="LineNr">565 </span>            },
+<span id="L566" class="LineNr">566 </span>          },
+<span id="L567" class="LineNr">567 </span>        },
+<span id="L568" class="LineNr">568 </span>      }
+<span id="L569" class="LineNr">569 </span>
+<span id="L570" class="LineNr">570 </span>      -- Ensure the servers and tools above are installed
+<span id="L571" class="LineNr">571 </span>      --  To check the current status of installed tools and/or manually install
+<span id="L572" class="LineNr">572 </span>      --  other tools, you can run
+<span id="L573" class="LineNr">573 </span>      --    :Mason
+<span id="L574" class="LineNr">574 </span>      --
+<span id="L575" class="LineNr">575 </span>      --  You can press `g?` for help in this menu.
+<span id="L576" class="LineNr">576 </span>      require('mason').setup()
+<span id="L577" class="LineNr">577 </span>
+<span id="L578" class="LineNr">578 </span>      -- You can add other tools here that you want Mason to install
+<span id="L579" class="LineNr">579 </span>      -- for you, so that they are available from within Neovim.
+<span id="L580" class="LineNr">580 </span>      local ensure_installed = vim.tbl_keys(servers or {})
+<span id="L581" class="LineNr">581 </span>      vim.list_extend(ensure_installed, {
+<span id="L582" class="LineNr">582 </span>        'stylua', -- Used to format Lua code
+<span id="L583" class="LineNr">583 </span>      })
+<span id="L584" class="LineNr">584 </span>      require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+<span id="L585" class="LineNr">585 </span>
+<span id="L586" class="LineNr">586 </span>      require('mason-lspconfig').setup {
+<span id="L587" class="LineNr">587 </span>        handlers = {
+<span id="L588" class="LineNr">588 </span>          function(server_name)
+<span id="L589" class="LineNr">589 </span>            local server = servers[server_name] or {}
+<span id="L590" class="LineNr">590 </span>            -- This handles overriding only values explicitly passed
+<span id="L591" class="LineNr">591 </span>            -- by the server configuration above. Useful when disabling
+<span id="L592" class="LineNr">592 </span>            -- certain features of an LSP (for example, turning off formatting for tsserver)
+<span id="L593" class="LineNr">593 </span>            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+<span id="L594" class="LineNr">594 </span>            require('lspconfig')[server_name].setup(server)
+<span id="L595" class="LineNr">595 </span>          end,
+<span id="L596" class="LineNr">596 </span>        },
+<span id="L597" class="LineNr">597 </span>      }
+<span id="L598" class="LineNr">598 </span>    end,
+<span id="L599" class="LineNr">599 </span>  },
+<span id="L600" class="LineNr">600 </span>
+<span id="L601" class="LineNr">601 </span>  { -- Autoformat
+<span id="L602" class="LineNr">602 </span>    'stevearc/conform.nvim',
+<span id="L603" class="LineNr">603 </span>    lazy = false,
+<span id="L604" class="LineNr">604 </span>    keys = {
+<span id="L605" class="LineNr">605 </span>      {
+<span id="L606" class="LineNr">606 </span>        '&lt;leader&gt;f',
+<span id="L607" class="LineNr">607 </span>        function()
+<span id="L608" class="LineNr">608 </span>          require('conform').format { async = true, lsp_fallback = true }
+<span id="L609" class="LineNr">609 </span>        end,
+<span id="L610" class="LineNr">610 </span>        mode = '',
+<span id="L611" class="LineNr">611 </span>        desc = '[F]ormat buffer',
+<span id="L612" class="LineNr">612 </span>      },
+<span id="L613" class="LineNr">613 </span>    },
+<span id="L614" class="LineNr">614 </span>    opts = {
+<span id="L615" class="LineNr">615 </span>      notify_on_error = false,
+<span id="L616" class="LineNr">616 </span>      format_on_save = function(bufnr)
+<span id="L617" class="LineNr">617 </span>        -- Disable &quot;format_on_save lsp_fallback&quot; for languages that don't
+<span id="L618" class="LineNr">618 </span>        -- have a well standardized coding style. You can add additional
+<span id="L619" class="LineNr">619 </span>        -- languages here or re-enable it for the disabled ones.
+<span id="L620" class="LineNr">620 </span>        local disable_filetypes = { c = true, cpp = true }
+<span id="L621" class="LineNr">621 </span>        return {
+<span id="L622" class="LineNr">622 </span>          timeout_ms = 500,
+<span id="L623" class="LineNr">623 </span>          lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+<span id="L624" class="LineNr">624 </span>        }
+<span id="L625" class="LineNr">625 </span>      end,
+<span id="L626" class="LineNr">626 </span>      formatters_by_ft = {
+<span id="L627" class="LineNr">627 </span>        lua = { 'stylua' },
+<span id="L628" class="LineNr">628 </span>        -- Conform can also run multiple formatters sequentially
+<span id="L629" class="LineNr">629 </span>        -- python = { &quot;isort&quot;, &quot;black&quot; },
+<span id="L630" class="LineNr">630 </span>        --
+<span id="L631" class="LineNr">631 </span>        -- You can use a sub-list to tell conform to run *until* a formatter
+<span id="L632" class="LineNr">632 </span>        -- is found.
+<span id="L633" class="LineNr">633 </span>        -- javascript = { { &quot;prettierd&quot;, &quot;prettier&quot; } },
+<span id="L634" class="LineNr">634 </span>      },
+<span id="L635" class="LineNr">635 </span>    },
+<span id="L636" class="LineNr">636 </span>  },
+<span id="L637" class="LineNr">637 </span>
+<span id="L638" class="LineNr">638 </span>  { -- Autocompletion
+<span id="L639" class="LineNr">639 </span>    'hrsh7th/nvim-cmp',
+<span id="L640" class="LineNr">640 </span>    event = 'InsertEnter',
+<span id="L641" class="LineNr">641 </span>    dependencies = {
+<span id="L642" class="LineNr">642 </span>      -- Snippet Engine &amp; its associated nvim-cmp source
+<span id="L643" class="LineNr">643 </span>      {
+<span id="L644" class="LineNr">644 </span>        'L3MON4D3/LuaSnip',
+<span id="L645" class="LineNr">645 </span>        build = (function()
+<span id="L646" class="LineNr">646 </span>          -- Build Step is needed for regex support in snippets.
+<span id="L647" class="LineNr">647 </span>          -- This step is not supported in many windows environments.
+<span id="L648" class="LineNr">648 </span>          -- Remove the below condition to re-enable on windows.
+<span id="L649" class="LineNr">649 </span>          if vim.fn.has 'win32' == 1 or vim.fn.executable 'make' == 0 then
+<span id="L650" class="LineNr">650 </span>            return
+<span id="L651" class="LineNr">651 </span>          end
+<span id="L652" class="LineNr">652 </span>          return 'make install_jsregexp'
+<span id="L653" class="LineNr">653 </span>        end)(),
+<span id="L654" class="LineNr">654 </span>        dependencies = {
+<span id="L655" class="LineNr">655 </span>          -- `friendly-snippets` contains a variety of premade snippets.
+<span id="L656" class="LineNr">656 </span>          --    See the README about individual language/framework/plugin snippets:
+<span id="L657" class="LineNr">657 </span>          --    <a href="https://github.com/rafamadriz/friendly-snippets">https://github.com/rafamadriz/friendly-snippets</a>
+<span id="L658" class="LineNr">658 </span>          -- {
+<span id="L659" class="LineNr">659 </span>          --   'rafamadriz/friendly-snippets',
+<span id="L660" class="LineNr">660 </span>          --   config = function()
+<span id="L661" class="LineNr">661 </span>          --     require('luasnip.loaders.from_vscode').lazy_load()
+<span id="L662" class="LineNr">662 </span>          --   end,
+<span id="L663" class="LineNr">663 </span>          -- },
+<span id="L664" class="LineNr">664 </span>        },
+<span id="L665" class="LineNr">665 </span>      },
+<span id="L666" class="LineNr">666 </span>      'saadparwaiz1/cmp_luasnip',
+<span id="L667" class="LineNr">667 </span>
+<span id="L668" class="LineNr">668 </span>      -- Adds other completion capabilities.
+<span id="L669" class="LineNr">669 </span>      --  nvim-cmp does not ship with all sources by default. They are split
+<span id="L670" class="LineNr">670 </span>      --  into multiple repos for maintenance purposes.
+<span id="L671" class="LineNr">671 </span>      'hrsh7th/cmp-nvim-lsp',
+<span id="L672" class="LineNr">672 </span>      'hrsh7th/cmp-path',
+<span id="L673" class="LineNr">673 </span>    },
+<span id="L674" class="LineNr">674 </span>    config = function()
+<span id="L675" class="LineNr">675 </span>      -- See `:help cmp`
+<span id="L676" class="LineNr">676 </span>      local cmp = require 'cmp'
+<span id="L677" class="LineNr">677 </span>      local luasnip = require 'luasnip'
+<span id="L678" class="LineNr">678 </span>      luasnip.config.setup {}
+<span id="L679" class="LineNr">679 </span>
+<span id="L680" class="LineNr">680 </span>      cmp.setup {
+<span id="L681" class="LineNr">681 </span>        snippet = {
+<span id="L682" class="LineNr">682 </span>          expand = function(args)
+<span id="L683" class="LineNr">683 </span>            luasnip.lsp_expand(args.body)
+<span id="L684" class="LineNr">684 </span>          end,
+<span id="L685" class="LineNr">685 </span>        },
+<span id="L686" class="LineNr">686 </span>        completion = { completeopt = 'menu,menuone,noinsert' },
+<span id="L687" class="LineNr">687 </span>
+<span id="L688" class="LineNr">688 </span>        -- For an understanding of why these mappings were
+<span id="L689" class="LineNr">689 </span>        -- chosen, you will need to read `:help ins-completion`
+<span id="L690" class="LineNr">690 </span>        --
+<span id="L691" class="LineNr">691 </span>        -- No, but seriously. Please read `:help ins-completion`, it is really good!
+<span id="L692" class="LineNr">692 </span>        mapping = cmp.mapping.preset.insert {
+<span id="L693" class="LineNr">693 </span>          -- Select the [n]ext item
+<span id="L694" class="LineNr">694 </span>          ['&lt;C-n&gt;'] = cmp.mapping.select_next_item(),
+<span id="L695" class="LineNr">695 </span>          -- Select the [p]revious item
+<span id="L696" class="LineNr">696 </span>          ['&lt;C-p&gt;'] = cmp.mapping.select_prev_item(),
+<span id="L697" class="LineNr">697 </span>
+<span id="L698" class="LineNr">698 </span>          -- Scroll the documentation window [b]ack / [f]orward
+<span id="L699" class="LineNr">699 </span>          ['&lt;C-b&gt;'] = cmp.mapping.scroll_docs(-4),
+<span id="L700" class="LineNr">700 </span>          ['&lt;C-f&gt;'] = cmp.mapping.scroll_docs(4),
+<span id="L701" class="LineNr">701 </span>
+<span id="L702" class="LineNr">702 </span>          -- Accept ([y]es) the completion.
+<span id="L703" class="LineNr">703 </span>          --  This will auto-import if your LSP supports it.
+<span id="L704" class="LineNr">704 </span>          --  This will expand snippets if the LSP sent a snippet.
+<span id="L705" class="LineNr">705 </span>          ['&lt;C-y&gt;'] = cmp.mapping.confirm { select = true },
+<span id="L706" class="LineNr">706 </span>
+<span id="L707" class="LineNr">707 </span>          -- Manually trigger a completion from nvim-cmp.
+<span id="L708" class="LineNr">708 </span>          --  Generally you don't need this, because nvim-cmp will display
+<span id="L709" class="LineNr">709 </span>          --  completions whenever it has completion options available.
+<span id="L710" class="LineNr">710 </span>          ['&lt;C-Space&gt;'] = cmp.mapping.complete {},
+<span id="L711" class="LineNr">711 </span>
+<span id="L712" class="LineNr">712 </span>          -- Think of &lt;c-l&gt; as moving to the right of your snippet expansion.
+<span id="L713" class="LineNr">713 </span>          --  So if you have a snippet that's like:
+<span id="L714" class="LineNr">714 </span>          --  function $name($args)
+<span id="L715" class="LineNr">715 </span>          --    $body
+<span id="L716" class="LineNr">716 </span>          --  end
+<span id="L717" class="LineNr">717 </span>          --
+<span id="L718" class="LineNr">718 </span>          -- &lt;c-l&gt; will move you to the right of each of the expansion locations.
+<span id="L719" class="LineNr">719 </span>          -- &lt;c-h&gt; is similar, except moving you backwards.
+<span id="L720" class="LineNr">720 </span>          ['&lt;C-l&gt;'] = cmp.mapping(function()
+<span id="L721" class="LineNr">721 </span>            if luasnip.expand_or_locally_jumpable() then
+<span id="L722" class="LineNr">722 </span>              luasnip.expand_or_jump()
+<span id="L723" class="LineNr">723 </span>            end
+<span id="L724" class="LineNr">724 </span>          end, { 'i', 's' }),
+<span id="L725" class="LineNr">725 </span>          ['&lt;C-h&gt;'] = cmp.mapping(function()
+<span id="L726" class="LineNr">726 </span>            if luasnip.locally_jumpable(-1) then
+<span id="L727" class="LineNr">727 </span>              luasnip.jump(-1)
+<span id="L728" class="LineNr">728 </span>            end
+<span id="L729" class="LineNr">729 </span>          end, { 'i', 's' }),
+<span id="L730" class="LineNr">730 </span>
+<span id="L731" class="LineNr">731 </span>          -- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
+<span id="L732" class="LineNr">732 </span>          --    <a href="https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps">https://github.com/L3MON4D3/LuaSnip?tab=readme-ov-file#keymaps</a>
+<span id="L733" class="LineNr">733 </span>        },
+<span id="L734" class="LineNr">734 </span>        sources = {
+<span id="L735" class="LineNr">735 </span>          { name = 'nvim_lsp' },
+<span id="L736" class="LineNr">736 </span>          { name = 'luasnip' },
+<span id="L737" class="LineNr">737 </span>          { name = 'path' },
+<span id="L738" class="LineNr">738 </span>        },
+<span id="L739" class="LineNr">739 </span>      }
+<span id="L740" class="LineNr">740 </span>    end,
+<span id="L741" class="LineNr">741 </span>  },
+<span id="L742" class="LineNr">742 </span>
+<span id="L743" class="LineNr">743 </span>  { -- You can easily change to a different colorscheme.
+<span id="L744" class="LineNr">744 </span>    -- Change the name of the colorscheme plugin below, and then
+<span id="L745" class="LineNr">745 </span>    -- change the command in the config to whatever the name of that colorscheme is.
+<span id="L746" class="LineNr">746 </span>    --
+<span id="L747" class="LineNr">747 </span>    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
+<span id="L748" class="LineNr">748 </span>    'folke/tokyonight.nvim',
+<span id="L749" class="LineNr">749 </span>    priority = 1000, -- Make sure to load this before all the other start plugins.
+<span id="L750" class="LineNr">750 </span>    init = function()
+<span id="L751" class="LineNr">751 </span>      -- Load the colorscheme here.
+<span id="L752" class="LineNr">752 </span>      -- Like many other themes, this one has different styles, and you could load
+<span id="L753" class="LineNr">753 </span>      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
+<span id="L754" class="LineNr">754 </span>      vim.cmd.colorscheme 'tokyonight-night'
+<span id="L755" class="LineNr">755 </span>
+<span id="L756" class="LineNr">756 </span>      -- You can configure highlights by doing something like:
+<span id="L757" class="LineNr">757 </span>      vim.cmd.hi 'Comment gui=none'
+<span id="L758" class="LineNr">758 </span>    end,
+<span id="L759" class="LineNr">759 </span>  },
+<span id="L760" class="LineNr">760 </span>
+<span id="L761" class="LineNr">761 </span>  -- Highlight todo, notes, etc in comments
+<span id="L762" class="LineNr">762 </span>  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+<span id="L763" class="LineNr">763 </span>
+<span id="L764" class="LineNr">764 </span>  { -- Collection of various small independent plugins/modules
+<span id="L765" class="LineNr">765 </span>    'echasnovski/mini.nvim',
+<span id="L766" class="LineNr">766 </span>    config = function()
+<span id="L767" class="LineNr">767 </span>      -- Better Around/Inside textobjects
+<span id="L768" class="LineNr">768 </span>      --
+<span id="L769" class="LineNr">769 </span>      -- Examples:
+<span id="L770" class="LineNr">770 </span>      --  - va)  - [V]isually select [A]round [)]paren
+<span id="L771" class="LineNr">771 </span>      --  - yinq - [Y]ank [I]nside [N]ext [']quote
+<span id="L772" class="LineNr">772 </span>      --  - ci'  - [C]hange [I]nside [']quote
+<span id="L773" class="LineNr">773 </span>      require('mini.ai').setup { n_lines = 500 }
+<span id="L774" class="LineNr">774 </span>
+<span id="L775" class="LineNr">775 </span>      -- Add/delete/replace surroundings (brackets, quotes, etc.)
+<span id="L776" class="LineNr">776 </span>      --
+<span id="L777" class="LineNr">777 </span>      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
+<span id="L778" class="LineNr">778 </span>      -- - sd'   - [S]urround [D]elete [']quotes
+<span id="L779" class="LineNr">779 </span>      -- - sr)'  - [S]urround [R]eplace [)] [']
+<span id="L780" class="LineNr">780 </span>      require('mini.surround').setup()
+<span id="L781" class="LineNr">781 </span>
+<span id="L782" class="LineNr">782 </span>      -- Simple and easy statusline.
+<span id="L783" class="LineNr">783 </span>      --  You could remove this setup call if you don't like it,
+<span id="L784" class="LineNr">784 </span>      --  and try some other statusline plugin
+<span id="L785" class="LineNr">785 </span>      local statusline = require 'mini.statusline'
+<span id="L786" class="LineNr">786 </span>      -- set use_icons to true if you have a Nerd Font
+<span id="L787" class="LineNr">787 </span>      statusline.setup { use_icons = vim.g.have_nerd_font }
+<span id="L788" class="LineNr">788 </span>
+<span id="L789" class="LineNr">789 </span>      -- You can configure sections in the statusline by overriding their
+<span id="L790" class="LineNr">790 </span>      -- default behavior. For example, here we set the section for
+<span id="L791" class="LineNr">791 </span>      -- cursor location to LINE:COLUMN
+<span id="L792" class="LineNr">792 </span>      ---@diagnostic disable-next-line: duplicate-set-field
+<span id="L793" class="LineNr">793 </span>      statusline.section_location = function()
+<span id="L794" class="LineNr">794 </span>        return '%2l:%-2v'
+<span id="L795" class="LineNr">795 </span>      end
+<span id="L796" class="LineNr">796 </span>
+<span id="L797" class="LineNr">797 </span>      -- ... and there is more!
+<span id="L798" class="LineNr">798 </span>      --  Check out: <a href="https://github.com/echasnovski/mini.nvim">https://github.com/echasnovski/mini.nvim</a>
+<span id="L799" class="LineNr">799 </span>    end,
+<span id="L800" class="LineNr">800 </span>  },
+<span id="L801" class="LineNr">801 </span>  { -- Highlight, edit, and navigate code
+<span id="L802" class="LineNr">802 </span>    'nvim-treesitter/nvim-treesitter',
+<span id="L803" class="LineNr">803 </span>    build = ':TSUpdate',
+<span id="L804" class="LineNr">804 </span>    opts = {
+<span id="L805" class="LineNr">805 </span>      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+<span id="L806" class="LineNr">806 </span>      -- Autoinstall languages that are not installed
+<span id="L807" class="LineNr">807 </span>      auto_install = true,
+<span id="L808" class="LineNr">808 </span>      highlight = {
+<span id="L809" class="LineNr">809 </span>        enable = true,
+<span id="L810" class="LineNr">810 </span>        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+<span id="L811" class="LineNr">811 </span>        --  If you are experiencing weird indenting issues, add the language to
+<span id="L812" class="LineNr">812 </span>        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
+<span id="L813" class="LineNr">813 </span>        additional_vim_regex_highlighting = { 'ruby' },
+<span id="L814" class="LineNr">814 </span>      },
+<span id="L815" class="LineNr">815 </span>      indent = { enable = true, disable = { 'ruby' } },
+<span id="L816" class="LineNr">816 </span>    },
+<span id="L817" class="LineNr">817 </span>    config = function(_, opts)
+<span id="L818" class="LineNr">818 </span>      -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+<span id="L819" class="LineNr">819 </span>
+<span id="L820" class="LineNr">820 </span>      ---@diagnostic disable-next-line: missing-fields
+<span id="L821" class="LineNr">821 </span>      require('nvim-treesitter.configs').setup(opts)
+<span id="L822" class="LineNr">822 </span>
+<span id="L823" class="LineNr">823 </span>      -- There are additional nvim-treesitter modules that you can use to interact
+<span id="L824" class="LineNr">824 </span>      -- with nvim-treesitter. You should go explore a few and see what interests you:
+<span id="L825" class="LineNr">825 </span>      --
+<span id="L826" class="LineNr">826 </span>      --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
+<span id="L827" class="LineNr">827 </span>      --    - Show your current context: <a href="https://github.com/nvim-treesitter/nvim-treesitter-context">https://github.com/nvim-treesitter/nvim-treesitter-context</a>
+<span id="L828" class="LineNr">828 </span>      --    - Treesitter + textobjects: <a href="https://github.com/nvim-treesitter/nvim-treesitter-textobjects">https://github.com/nvim-treesitter/nvim-treesitter-textobjects</a>
+<span id="L829" class="LineNr">829 </span>    end,
+<span id="L830" class="LineNr">830 </span>  },
+<span id="L831" class="LineNr">831 </span>
+<span id="L832" class="LineNr">832 </span>  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
+<span id="L833" class="LineNr">833 </span>  -- init.lua. If you want these files, they are in the repository, so you can just download them and
+<span id="L834" class="LineNr">834 </span>  -- place them in the correct locations.
+<span id="L835" class="LineNr">835 </span>
+<span id="L836" class="LineNr">836 </span>  -- NOTE: Next step on your Neovim journey: Add/Configure additional plugins for Kickstart
+<span id="L837" class="LineNr">837 </span>  --
+<span id="L838" class="LineNr">838 </span>  --  Here are some example plugins that I've included in the Kickstart repository.
+<span id="L839" class="LineNr">839 </span>  --  Uncomment any of the lines below to enable them (you will need to restart nvim).
+<span id="L840" class="LineNr">840 </span>  --
+<span id="L841" class="LineNr">841 </span>  -- require 'kickstart.plugins.debug',
+<span id="L842" class="LineNr">842 </span>  -- require 'kickstart.plugins.indent_line',
+<span id="L843" class="LineNr">843 </span>  -- require 'kickstart.plugins.lint',
+<span id="L844" class="LineNr">844 </span>
+<span id="L845" class="LineNr">845 </span>  -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
+<span id="L846" class="LineNr">846 </span>  --    This is the easiest way to modularize your config.
+<span id="L847" class="LineNr">847 </span>  --
+<span id="L848" class="LineNr">848 </span>  --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
+<span id="L849" class="LineNr">849 </span>  --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
+<span id="L850" class="LineNr">850 </span>  -- { import = 'custom.plugins' },
+<span id="L851" class="LineNr">851 </span>}, {
+<span id="L852" class="LineNr">852 </span>  ui = {
+<span id="L853" class="LineNr">853 </span>    -- If you are using a Nerd Font: set icons to an empty table which will use the
+<span id="L854" class="LineNr">854 </span>    -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
+<span id="L855" class="LineNr">855 </span>    icons = vim.g.have_nerd_font and {} or {
+<span id="L856" class="LineNr">856 </span>      cmd = '⌘',
+<span id="L857" class="LineNr">857 </span>      config = '🛠',
+<span id="L858" class="LineNr">858 </span>      event = '📅',
+<span id="L859" class="LineNr">859 </span>      ft = '📂',
+<span id="L860" class="LineNr">860 </span>      init = '⚙',
+<span id="L861" class="LineNr">861 </span>      keys = '🗝',
+<span id="L862" class="LineNr">862 </span>      plugin = '🔌',
+<span id="L863" class="LineNr">863 </span>      runtime = '💻',
+<span id="L864" class="LineNr">864 </span>      require = '🌙',
+<span id="L865" class="LineNr">865 </span>      source = '📄',
+<span id="L866" class="LineNr">866 </span>      start = '🚀',
+<span id="L867" class="LineNr">867 </span>      task = '📌',
+<span id="L868" class="LineNr">868 </span>      lazy = '💤 ',
+<span id="L869" class="LineNr">869 </span>    },
+<span id="L870" class="LineNr">870 </span>  },
+<span id="L871" class="LineNr">871 </span>})
+<span id="L872" class="LineNr">872 </span>
+<span id="L873" class="LineNr">873 </span>-- The line beneath this is called `modeline`. See `:help modeline`
+<span id="L874" class="LineNr">874 </span>-- vim&#0058; ts=2 sts=2 sw=2 et
+</pre>
+</body>
+</html>
+<!-- vim: set foldmethod=manual : -->

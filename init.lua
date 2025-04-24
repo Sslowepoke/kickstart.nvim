@@ -190,6 +190,13 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+-- [[ Compile C/Cpp code ]]
+-- See https://stackoverflow.com/questions/79458883/specify-c-standard-revision-with-nvim-kickstarter
+
+vim.api.nvim_create_user_command('BuildCpp', function()
+  vim.cmd '!clang++ -Wall -Wextra -Wpedantic -Werror -std=c++20 -g % -o %:r'
+end, { desc = 'Compile current C++ file with C++20 standard' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -227,6 +234,8 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'xiyaowong/transparent.nvim', -- transparent windows
+  'nvim-tree/nvim-web-devicons', -- pojma nemam neke ikonice
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -234,8 +243,8 @@ require('lazy').setup({
   --
   -- Use `opts = {}` to force a plugin to be loaded.
   --
-  --  This is equivalent to:
-  --    require('Comment').setup({})
+  -- This issequivalentsto:
+  --   require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
   { 'numToStr/Comment.nvim', opts = {} },
@@ -402,6 +411,37 @@ require('lazy').setup({
     end,
   },
 
+  { -- clangd for cpp intellisense
+    'p00f/clangd_extensions.nvim',
+    lazy = true,
+    config = function() end,
+    opts = {
+      inlay_hints = {
+        inline = false,
+      },
+      ast = {
+        --These require codicons (https://github.com/microsoft/vscode-codicons)
+        role_icons = {
+          type = '',
+          declaration = '',
+          expression = '',
+          specifier = '',
+          statement = '',
+          ['template argument'] = '',
+        },
+        kind_icons = {
+          Compound = '',
+          Recovery = '',
+          TranslationUnit = '',
+          PackExpansion = '',
+          TemplateTypeParm = '',
+          TemplateTemplateParm = '',
+          TemplateParamObject = '',
+        },
+      },
+    },
+  },
+
   { -- LSP Configuration & Plugins
     'neovim/nvim-lspconfig',
     dependencies = {
@@ -538,7 +578,8 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
+        -- Ensure mason installs the server
+        clangd = {},
         -- gopls = {},
         -- pyright = {},
         -- rust_analyzer = {},
@@ -753,6 +794,12 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'monokai-pro'
 
+      require('monokai-pro').setup {
+        transparent_background = true,
+        filter = 'spectrum',
+        terminal_colors = true,
+      }
+
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
     end,
@@ -793,6 +840,8 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
+      local statusline = require 'mini.statusline'
+      -- set use_icons to true if you have a Nerd font
       statusline.setup { use_icons = vim.g.have_nerd_font }
 
       -- You can configure sections in the statusline by overriding their
@@ -811,7 +860,7 @@ require('lazy').setup({
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'cpp' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -867,6 +916,27 @@ require('lazy').setup({
       -- VimTeX configuration goes here
     end,
   },
+  -- { -- markdown renderer
+  --   'MeanderingProgrammer/render-markdown.nvim',
+  --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+  --   -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+  --   -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+  --   ---@module 'render-markdown'
+  --   ---@type render.md.UserConfig
+  --   opts = {},
+  -- },
+  -- { -- mini nvim - ikonice
+  --   'echasnovski/mini.nvim',
+  --   version = false,
+  -- },
+  -- { -- ikonice
+  --   'nvim-tree/nvim-web-devicons',
+  -- },
+  -- { -- markdown nesto
+  --   'plasticboy/vim-markdown',
+  --   branch = 'master',
+  --   require = { 'godlygeek/tabular' },
+  -- },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the

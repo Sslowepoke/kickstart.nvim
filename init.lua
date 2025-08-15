@@ -197,6 +197,12 @@ vim.api.nvim_create_user_command('BuildCpp', function()
   vim.cmd '!clang++ -Wall -Wextra -Wpedantic -Werror -std=c++20 -g % -o %:r'
 end, { desc = 'Compile current C++ file with C++20 standard' })
 
+-- [[ Compile python code ]]
+--
+vim.api.nvim_create_user_command('RunPython', function()
+  vim.cmd 'python %'
+end, { desc = 'Run current python file' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -356,15 +362,33 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          -- mappings = {
+          --   i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          -- },
+          -- sorting_strategy = 'ascending',
+          -- layout_strategy = 'horizontal',
+          -- layout_config = { prompt_position = 'top' },
+          -- border = false,
+        },
+        --
         -- pickers = {}
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
+          },
+          file_browser = {
+            theme = 'ivy',
+            -- disables netrw and use telescope-file-browser in its place
+            hijack_netrw = true,
+            mappings = {
+              ['i'] = {
+                -- your custom insert mode mappings
+              },
+              ['n'] = {
+                -- your custom normal mode mappings
+              },
+            },
           },
         },
       }
@@ -372,6 +396,7 @@ require('lazy').setup({
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
       pcall(require('telescope').load_extension, 'ui-select')
+      pcall(require('telescope').load_extension, 'file_browser')
 
       -- See `:help telescope.builtin`
       local builtin = require 'telescope.builtin'
@@ -385,6 +410,12 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+
+      -- file browser
+      -- vim.keymap.set('n', '<leader>fb', ':Telescope file_browser path=%:p:h select_buffer=true<CR>')
+      vim.keymap.set('n', '<leader>fb', function()
+        require('telescope').extensions.file_browser.file_browser { path = '%:p:h', select_buffer = true }
+      end)
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -411,35 +442,13 @@ require('lazy').setup({
     end,
   },
 
+  { -- tree view for telescope
+    'nvim-telescope/telescope-file-browser.nvim',
+    dependencies = { 'nvim-telescope/telescope.nvim', 'nvim-lua/plenary.nvim' },
+  },
+
   { -- clangd for cpp intellisense
     'p00f/clangd_extensions.nvim',
-    lazy = true,
-    config = function() end,
-    opts = {
-      inlay_hints = {
-        inline = false,
-      },
-      ast = {
-        --These require codicons (https://github.com/microsoft/vscode-codicons)
-        role_icons = {
-          type = '',
-          declaration = '',
-          expression = '',
-          specifier = '',
-          statement = '',
-          ['template argument'] = '',
-        },
-        kind_icons = {
-          Compound = '',
-          Recovery = '',
-          TranslationUnit = '',
-          PackExpansion = '',
-          TemplateTypeParm = '',
-          TemplateTemplateParm = '',
-          TemplateParamObject = '',
-        },
-      },
-    },
   },
 
   { -- LSP Configuration & Plugins
@@ -607,6 +616,9 @@ require('lazy').setup({
           },
         },
       }
+
+      -- install clangd apparently ( very not sure)
+      require('lspconfig').clangd.setup {}
 
       -- Ensure the servers and tools above are installed
       --  To check the current status of installed tools and/or manually install
@@ -792,16 +804,26 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'monokai-pro'
-
-      require('monokai-pro').setup {
-        transparent_background = true,
-        filter = 'spectrum',
-        terminal_colors = true,
-      }
+      -- vim.cmd.colorscheme 'monokai-pro'
+      --
+      -- require('monokai-pro').setup {
+      --   transparent_background = true,
+      --   filter = 'spectrum',
+      --   terminal_colors = true,
+      -- }
 
       -- You can configure highlights by doing something like:
       -- vim.cmd.hi 'Comment gui=none'
+    end,
+  },
+
+  { -- cattpuccin theme
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+
+    init = function()
+      vim.cmd.colorscheme 'catppuccin-frappe'
     end,
   },
 
@@ -914,8 +936,34 @@ require('lazy').setup({
     -- tag = "v2.15", -- uncomment to pin to a specific release
     init = function()
       -- VimTeX configuration goes here
+      vim.g.vimtex_view_method = 'zathura'
     end,
   },
+  { -- terminal that can be toggled, like vscode
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = function()
+      require('toggleterm').setup {
+        -- shading_factor = 70,
+        shade_terminals = false,
+        direction = 'float',
+      }
+
+      vim.keymap.set('n', '<D-j>', function()
+        local file_dir = vim.fn.expand '%:p:h'
+        require('toggleterm').toggle(1, nil, file_dir)
+      end)
+
+      vim.keymap.set('t', '<D-j>', function()
+        require('toggleterm').toggle()
+      end)
+    end,
+
+    -- vim.keymap.set("v", "<space>s", function()
+    --   require("toggleterm").send_lines_to_terminal("single_line", trim_spaces, { args = vim.v.count })
+    -- end)
+  },
+
   -- { -- markdown renderer
   --   'MeanderingProgrammer/render-markdown.nvim',
   --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
@@ -932,11 +980,11 @@ require('lazy').setup({
   -- { -- ikonice
   --   'nvim-tree/nvim-web-devicons',
   -- },
-  -- { -- markdown nesto
-  --   'plasticboy/vim-markdown',
-  --   branch = 'master',
-  --   require = { 'godlygeek/tabular' },
-  -- },
+  { -- markdown nesto
+    'plasticboy/vim-markdown',
+    branch = 'master',
+    require = { 'godlygeek/tabular' },
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
